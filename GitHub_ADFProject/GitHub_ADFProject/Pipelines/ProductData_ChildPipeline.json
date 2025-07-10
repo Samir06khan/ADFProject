@@ -1,0 +1,48 @@
+{
+  "name": "ProductData_ChildPipeline",
+  "properties": {
+    "parameters": {
+      "customerCount": {
+        "type": "Int"
+      }
+    },
+    "activities": [
+      {
+        "name": "If_CustomerCount_GT_600",
+        "type": "IfCondition",
+        "typeProperties": {
+          "expression": {
+            "value": "@greaterOrEquals(pipeline().parameters.customerCount, 600)",
+            "type": "Expression"
+          },
+          "ifTrueActivities": [
+            {
+              "name": "CopyProductDataToADLS",
+              "type": "Copy",
+              "inputs": [
+                {
+                  "referenceName": "Product_SQLTable_Dataset",
+                  "type": "DatasetReference"
+                }
+              ],
+              "outputs": [
+                {
+                  "referenceName": "Product_JSON_Output_Dataset",
+                  "type": "DatasetReference"
+                }
+              ],
+              "typeProperties": {
+                "source": {
+                  "type": "SqlSource"
+                },
+                "sink": {
+                  "type": "JsonSink"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

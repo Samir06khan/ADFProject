@@ -1,0 +1,24 @@
+{
+  "name": "Country_REST_API_Dataset",
+  "properties": {
+    "linkedServiceName": {
+      "referenceName": "REST_CountryAPI_LinkedService",
+      "type": "LinkedServiceReference"
+    },
+    "parameters": {
+      "CountryName": {
+        "type": "String"
+      }
+    },
+    "type": "HttpFile",
+    "typeProperties": {
+      "relativeUrl": {
+        "value": "v3.1/name/@{dataset().CountryName}",
+        "type": "Expression"
+      },
+      "format": {
+        "type": "JsonFormat"
+      }
+    }
+  }
+}

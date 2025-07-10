@@ -1,0 +1,94 @@
+{
+  "name": "CustomerData_MainPipeline",
+  "properties": {
+    "parameters": {},
+    "activities": [
+      {
+        "name": "GetCustomerCount",
+        "type": "Lookup",
+        "typeProperties": {
+          "source": {
+            "type": "SqlSource",
+            "sqlReaderQuery": "SELECT COUNT(*) AS RecordCount FROM Customer"
+          },
+          "firstRowOnly": true
+        },
+        "dataset": {
+          "referenceName": "Customer_SQLTable_Dataset",
+          "type": "DatasetReference"
+        }
+      },
+      {
+        "name": "If_RecordCount_GT_500",
+        "type": "IfCondition",
+        "dependsOn": [
+          {
+            "activity": "GetCustomerCount",
+            "dependencyConditions": ["Succeeded"]
+          }
+        ],
+        "typeProperties": {
+          "expression": {
+            "value": "@greater(int(activity('GetCustomerCount').output.firstRow.RecordCount), 500)",
+            "type": "Expression"
+          },
+          "ifTrueActivities": [
+            {
+              "name": "CopyCustomerDataToADLS",
+              "type": "Copy",
+              "inputs": [
+                {
+                  "referenceName": "Customer_SQLTable_Dataset",
+                  "type": "DatasetReference"
+                }
+              ],
+              "outputs": [
+                {
+                  "referenceName": "Customer_JSON_Output_Dataset",
+                  "type": "DatasetReference"
+                }
+              ],
+              "typeProperties": {
+                "source": {
+                  "type": "SqlSource"
+                },
+                "sink": {
+                  "type": "JsonSink"
+                }
+              }
+            },
+            {
+              "name": "If_RecordCount_GT_600",
+              "type": "IfCondition",
+              "typeProperties": {
+                "expression": {
+                  "value": "@greater(int(activity('GetCustomerCount').output.firstRow.RecordCount), 600)",
+                  "type": "Expression"
+                },
+                "ifTrueActivities": [
+                  {
+                    "name": "Execute_Product_Pipeline",
+                    "type": "ExecutePipeline",
+                    "typeProperties": {
+                      "pipeline": {
+                        "referenceName": "ProductData_ChildPipeline",
+                        "type": "PipelineReference"
+                      },
+                      "parameters": {
+                        "customerCount": {
+                          "value": "@activity('GetCustomerCount').output.firstRow.RecordCount",
+                          "type": "Expression"
+                        }
+                      },
+                      "waitOnCompletion": true
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
