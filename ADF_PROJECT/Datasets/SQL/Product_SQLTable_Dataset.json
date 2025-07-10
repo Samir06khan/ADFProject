@@ -1,0 +1,13 @@
+{
+  "name": "Product_SQLTable_Dataset",
+  "properties": {
+    "linkedServiceName": {
+      "referenceName": "AzureSQL_DB_LinkedService",
+      "type": "LinkedServiceReference"
+    },
+    "type": "AzureSqlTable",
+    "typeProperties": {
+      "tableName": "Product"
+    }
+  }
+}

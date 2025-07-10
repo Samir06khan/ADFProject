@@ -1,0 +1,27 @@
+{
+  "name": "CountryData_DailyTrigger",
+  "properties": {
+    "type": "ScheduleTrigger",
+    "typeProperties": {
+      "recurrence": {
+        "frequency": "Day",
+        "interval": 1,
+        "startTime": "2025-07-07T00:00:00+05:30",
+        "timeZone": "India Standard Time",
+        "schedule": {
+          "hours": [0, 12],
+          "minutes": [0]
+        }
+      }
+    },
+    "pipelines": [
+      {
+        "pipelineReference": {
+          "referenceName": "GetCountryData_Pipeline",
+          "type": "PipelineReference"
+        },
+        "parameters": {}
+      }
+    ]
+  }
+}
